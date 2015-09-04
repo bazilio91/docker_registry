@@ -3,39 +3,49 @@ require 'uri'
 module DockerRegistry
   class Registry
 
-    attr_reader :base_uri, :options, :client
+    attr_reader :domain
+    attr_reader :client
 
-    # @see DockerRegistry::Client#initialize
-    def initialize(uri, api_version = 'v1')
-      @uri = URI.parse(uri)
-      @client = DockerRegistry::Client.build(
-        "#{@uri.scheme}://#{@uri.host}:#{@uri.port}",
-        api_version,
-        user: @uri.user,
-        password: @uri.password
-      )
+
+    def initialize(uri, client)
+      @domain = uri.host
+      @client = client
     end
 
+    class << self
 
-    def domain
-      @domain ||= @uri.host
-    end
-
-
-    def ping
-      @client.ping
-    end
-
-
-    def all
-      search
-    end
-
-
-    def search(query = '')
-      (@client.search(query)['results'] || []).map do |repo|
-        DockerRegistry::Repository.new(repo, self)
+      def build(uri, api_version)
+        uri = URI.parse(uri)
+        case api_version
+        when 'v1'
+          DockerRegistry::ApiV1::Registry.new(uri, get_client(uri, api_version))
+        when 'v2'
+          DockerRegistry::ApiV2::Registry.new(uri, get_client(uri, api_version))
+        end
       end
+
+
+      def get_client(uri, api_version)
+        options = { user: uri.user, password: uri.password }
+        parsed_uri = "#{uri.scheme}://#{uri.host}:#{uri.port}"
+        case api_version
+        when 'v1'
+          DockerRegistry::ApiV1::Client.new(parsed_uri, options)
+        when 'v2'
+          DockerRegistry::ApiV2::Client.new(parsed_uri, options)
+        end
+      end
+
+    end
+
+
+    def alive?
+      @client.alive?
+    end
+
+
+    def repositories
+      search
     end
 
 
@@ -44,16 +54,18 @@ module DockerRegistry
     end
 
 
-    def repository_tags(repository)
-      (@client.repository_tags(repository.name) || {}).map do |name, image_id|
-        DockerRegistry::Tag.new(name, image_id, repository)
-      end
+    def search(query = '')
+      raise NotImplementedError
     end
 
 
-    def repository_tag(repository, tag)
-      image_id = (@client.repository_tag(repository.name, tag) || "")
-      DockerRegistry::Tag.new(tag, image_id, repository)
+    def repository_tags(repository)
+      raise NotImplementedError
+    end
+
+
+    def repository_tag(repository, name)
+      DockerRegistry::Tag.new(name, repository)
     end
 
 
@@ -62,19 +74,8 @@ module DockerRegistry
     end
 
 
-    def delete_repository_tag(tag)
-      @client.delete_repository_tag(tag.repository.name, tag.name)
-    end
-
-
-    def get_image(image_id)
-      meta = @client.get_image(image_id) || {}
-      DockerRegistry::Image.new(meta)
-    end
-
-
-    def alive?
-      @client.alive?
+    def delete_repository_tag(repository, tag)
+      @client.delete_repository_tag(repository.name, tag.name)
     end
 
   end

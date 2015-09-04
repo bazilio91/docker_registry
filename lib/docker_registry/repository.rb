@@ -1,16 +1,7 @@
 module DockerRegistry
   class Repository
 
-    attr_reader :name, :metadata, :registry
-
-    def initialize(metadata, registry)
-      @metadata = {}
-      metadata.each_pair do |key, val|
-        @metadata[key.to_sym] = val
-      end
-      @name = @metadata[:name]
-      @registry = registry
-    end
+    attr_reader :name, :registry
 
 
     def to_s
@@ -39,7 +30,7 @@ module DockerRegistry
 
 
     def inspect
-      "#<DockerRegistry::Repository #{full_name} >"
+      "#<DockerRegistry::Repository #{full_name}>"
     end
 
   end

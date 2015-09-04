@@ -1,6 +1,6 @@
 module DockerRegistry
-  module Client
-    class ApiV2 < Base
+  module ApiV2
+    class Client < DockerRegistry::Client
 
       def ping
         @faraday.get('/v2/')
@@ -28,11 +28,6 @@ module DockerRegistry
 
 
       def delete_repository_tag(repository_name, tag_name)
-
-      end
-
-
-      def get_image(image_id)
 
       end
 

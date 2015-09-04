@@ -1,11 +1,10 @@
 module DockerRegistry
   class Tag
 
-    attr_reader :name, :image_id, :repository
+    attr_reader :name, :repository
 
-    def initialize(name, image_id, repository)
+    def initialize(name, repository)
       @name       = name
-      @image_id   = image_id
       @repository = repository
     end
 
@@ -32,11 +31,6 @@ module DockerRegistry
 
     def registry
       @repository.registry
-    end
-
-
-    def infos
-      registry.get_image(image_id)
     end
 
 
