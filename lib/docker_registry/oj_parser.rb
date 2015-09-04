@@ -1,5 +1,4 @@
 require 'faraday_middleware/response_middleware'
-require 'docker_registry'
 
 module DockerRegistry
   class OjParser < FaradayMiddleware::ResponseMiddleware
