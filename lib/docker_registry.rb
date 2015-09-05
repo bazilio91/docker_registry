@@ -1,5 +1,6 @@
 module DockerRegistry
   require 'docker_registry/client'
+  require 'docker_registry/errors'
   require 'docker_registry/image'
   require 'docker_registry/oj_parser'
   require 'docker_registry/registry'

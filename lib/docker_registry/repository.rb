@@ -5,7 +5,7 @@ module DockerRegistry
 
 
     def to_s
-      full_name
+      name
     end
 
 
@@ -20,6 +20,11 @@ module DockerRegistry
 
 
     def [](tag)
+      find_tag(tag)
+    end
+
+
+    def find_tag(tag)
       registry.repository_tag(self, tag)
     end
 

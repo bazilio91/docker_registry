@@ -12,6 +12,7 @@ module DockerRegistry
       @client = client
     end
 
+
     class << self
 
       def build(uri, api_version)
@@ -44,17 +45,27 @@ module DockerRegistry
     end
 
 
+    def [](name)
+      find_repository(name)
+    end
+
+
+    def find_repository(name)
+      repo = search(repository: name)
+      if repo.empty?
+        raise ::DockerRegistry::Errors::RepositoryNotFound, "Repository not found : '#{name}'"
+      else
+        repo.first
+      end
+    end
+
+
     def repositories
       search
     end
 
 
-    def [](name)
-      DockerRegistry::Repository.new({ name: name }, self)
-    end
-
-
-    def search(query = '')
+    def search(opts = {})
       raise NotImplementedError
     end
 
@@ -65,17 +76,17 @@ module DockerRegistry
 
 
     def repository_tag(repository, name)
-      DockerRegistry::Tag.new(name, repository)
+      raise NotImplementedError
     end
 
 
     def delete_repository(repository)
-      @client.delete_repository(repository.name)
+      raise NotImplementedError
     end
 
 
     def delete_repository_tag(repository, tag)
-      @client.delete_repository_tag(repository.name, tag.name)
+      raise NotImplementedError
     end
 
   end

@@ -7,8 +7,8 @@ module DockerRegistry
       end
 
 
-      def search(query = '')
-        @faraday.get('/v1/search', { q: query }).body
+      def search(opts = {})
+        @faraday.get('/v1/search', opts).body
       end
 
 
@@ -27,10 +27,8 @@ module DockerRegistry
       end
 
 
-      def delete_repository_tag(repository_name, tag_name)
-        @faraday\
-          .delete("/v1/repositories/#{repository_name}/tags/#{tag_name}")\
-          .status == 200
+      def delete_repository_tag(name, tag)
+        @faraday.delete("/v1/repositories/#{name}/tags/#{tag}").status == 200
       end
 
     end

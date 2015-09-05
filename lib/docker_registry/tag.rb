@@ -10,38 +10,36 @@ module DockerRegistry
 
 
     def to_s
-      full_name
-    end
-
-
-    def full_name
-      "#{repository_name}:#{name}"
-    end
-
-
-    def repository_name
-      @repository.name
+      path
     end
 
 
     def path
-      full_name
+      "#{repository.name}:#{name}"
     end
 
 
-    def registry
-      @repository.registry
+    def full_path
+      "#{repository.full_name}:#{name}"
     end
 
 
     def delete!
-      registry.delete_repository_tag(self)
+      registry.delete_repository_tag(repository, self)
     end
 
 
     def inspect
-      "#<DockerRegistry::Tag #{full_name}>"
+      "#<DockerRegistry::Tag #{path}>"
     end
+
+
+    private
+
+
+      def registry
+        @repository.registry
+      end
 
   end
 end

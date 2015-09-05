@@ -4,11 +4,11 @@ module DockerRegistry
 
       def initialize(registry, metadata = {})
         @registry = registry
-        @name     = metadata.delete('name')
         @metadata = {}
         metadata.each do |key, val|
           @metadata[key.to_sym] = val
         end
+        @name = @metadata[:name]
       end
 
     end

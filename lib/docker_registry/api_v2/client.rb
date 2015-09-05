@@ -7,28 +7,18 @@ module DockerRegistry
       end
 
 
-      def search(query = '')
-        @faraday.get('/v1/search', { q: query }).body
+      def search(opts = {})
+        @faraday.get('/v2/_catalog', opts).body
       end
 
 
       def repository_tags(name)
-
+        @faraday.get("/v2/#{name}/tags/list").body
       end
 
 
       def repository_tag(name, tag)
-
-      end
-
-
-      def delete_repository(name)
-
-      end
-
-
-      def delete_repository_tag(repository_name, tag_name)
-
+        @faraday.get("/v2/#{name}/manifests/#{tag}").body
       end
 
     end
